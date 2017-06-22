@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Profile</title>
+	      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+	   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+   <%- include('./partials/nav.ejs', {user: user}); %>
+  <main >
+
+ <% if(user) { %>
+     <%- include('./partials/dashboard.ejs', {user: user}); %>
+  <%} %>
+      <div class="container" style="margin-top: 5%;">
+
+
+      <div class="row">
+          <div class=" col s12" style="text-align: center;">
+            <h4>Sorry you already voted!</h4>
+        </div>
+      </div>
+        <%- include('./partials/share.ejs', {user: user, poll: poll, options: options }); %>
+</div>
+</main>
+</body>
+   <%- include('./partials/script.ejs') %>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Profile</title>
+	      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+	   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<style type="text/css">
+  .new.badge:hover {
+    background: red;
+  }
+</style>
+<body>
+   <%- include('./partials/nav.ejs', {user: user}); %>
+  <main>
+   
+          <% if(user && url==='showAll' || user && url==='delete') { %>
+             <%- include('./partials/dashboard.ejs', {user: user}); %>
+                <div class="container">
+
+      <div class="row">
+          <div class=" col s12">
+     
+            <h4 style="text-align: center">My Polls</h4>
+                <% if (url==='delete') { %>
+                    <div class="alert alert-danger">Poll deleted.</div>
+               <% } %>
+               <div class="collection">
+                   <% polls.forEach(poll => { %>    
+                <a href="/vote?id=<%- poll._id %>" class="collection-item">
+                    <span class="new badge" style="height: 25px;" data-badge-caption="">    
+                    <form action="delete?id=<%- poll._id %>" method="post">
+                      <button  style="border: none; background: transparent;" type="submit" >Delete</button>   
+                    </form>
+                  </span><%- poll.question %>
+                </a>
+             <% }) %>
+                </div> 
+            </div>
+            </div>
+            </div>
+
+          <% } else { %>
+           
+              <% if(user) { %>
+                 <%- include('./partials/dashboard.ejs', {user: user}); %>
+
+              <% } %>
+                 <div style="margin-top: 3%;" class="container">
+                    <div class="row">
+                      <div class=" col s12">
+                             <h4 style="text-align: center">Latest Polls</h4>
+                         <div class="collection">
+                          <% polls.forEach(poll => { %>    
+                            <a href="/vote?id=<%- poll._id %>" class="collection-item">
+                           <%- poll.question %>
+                            </a>
+                            <% }) %>
+                        </div>
+                     </div>      
+                 </div>
+              </div>
+              <% } %>
+    
+     
+</div>
+</main>
+</body>
+   <%- include('./partials/script.ejs') %>
+</html>

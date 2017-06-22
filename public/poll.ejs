@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Success</title>
+	      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+   <%- include('./partials/nav.ejs', {user: user}); %>
+  <main > 
+              <% if(user) { %>
+                 <%- include('./partials/dashboard.ejs', {user: user}); %>
+
+              <% } %>
+      <div class="container" style="margin-top: 5%;">
+              <% if(!user) { %>
+                <h5>I'd like to vote for...</h5>
+              <% } %>
+        <div class="alert alert-danger"></div>
+
+          <div class="row">
+          <div class=" col s12 m6">
+
+            <h4><%- poll.question %> </h4>
+           <div class="error" style="display: none; margin-top: 20px; margin-bottom: 20px; color: red;">Please make a selection.</div>
+            <form id="form" action="vote" method="post">
+
+                <% options.forEach((opt, index) => { %>
+                  <input class="input" type="radio" name="option" value="<%- index %>" id="opt_<%- index %>">
+                  <label for="opt_<%- index %>"><%- opt.answer %></label>
+                   <p>Number of votes: <%- opt.votes %></p> 
+                  <br/>
+                <% }) %>
+                <br/>
+                <input id="poll-id" type="hidden" name="pollId" value="<%- poll._id %>" />
+                <input id="opts-hidden" type="hidden" name="options" value="<%- options %>" />
+                <input type="hidden" name="poll" value="<%- poll %>" />
+                <% if(user) { %>
+                <button id="moreOpt" class="waves-effect waves-light btn">Add custom option</button>
+                <% } %>
+                <button id="vote" type="submit" class="waves-effect waves-light btn">Vote</button>
+            </form>
+            </div>
+            <div class=" col s12 m6">
+    <h5 style="text-align: center;">Results</h5>
+       <div class="chart"></div>
+       </div>
+      </div>
+  
+   
+         <%- include('./partials/share.ejs', {user: user, poll: poll, options: options }); %>
+</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"> </script>
+</body>
+
+   <%- include('./partials/script.ejs') %>
+
+   <script>
+      $(function() {
+        //add custum option
+        $('#moreOpt').click((e) => {
+          e.preventDefault();
+          $('#moreOpt').before('<span id="wrapper">Vote with my own option: <br/><button id="del" style="float:right;" class="waves-effect waves-light btn">Delete</button> <input id="custom" style="display:inline-block;" name="custom" type="text"/></span>');
+          $('#moreOpt, input[type="radio"]').prop("disabled", true);
+          $('#del').click((e)=>{
+            e.preventDefault();
+              $(e.target).parent().remove();
+              $('#moreOpt, input[type="radio"]').prop("disabled", false);
+          });
+        });
+
+        // validate theres a selection before submiting
+        $('#vote').click((e) => {
+            e.preventDefault();
+            console.log($('form .input'))
+            let selected = false;
+          $('form .input').each((i, obj) => {
+                   console.log($(obj).is(':checked'))
+                   if($(obj).is(':checked')){
+                    selected = true;
+                     return false;
+                   }
+              });
+             if(selected || $('#custom').val()){
+               $('#form').submit();
+             } else {
+                $('.error').show();
+              
+             }
+          })
+
+//d3 chart
+        var margin = { top: 10, right: 30, bottom: 70, left: 70 };
+          var width = 700 - margin.left - margin.right;
+          var height = 600 - margin.top - margin.bottom;
+
+          var svg = d3
+            .select(".chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .call(responsivefy)
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+            let opts = $('#opts-hidden').val()
+            let pollId = $('#poll-id').val();
+             
+             d3.json(`https://agile-retreat-20088.herokuapp.com/chart?id=${pollId}`, function(err, data){
+              console.log(data);
+
+              if(data){
+
+              const extent = d3.extent(data, function(d){
+              
+                return d.votes
+              });
+
+                console.log('dd',extent)
+            
+         
+
+              const yScale = d3.scaleLinear()
+              .domain([0,extent[1]])
+              .range([height, 0]);
+
+              const xScale = d3.scaleBand().range([0, width]).padding(0.1)
+              .domain(data.map(function(d) { return d.answer; }));;
+
+                  //add y-axis
+              svg.append("g").call(d3.axisLeft(yScale).ticks(5))
+                 .style('font-size', '20');
+
+                  //add x-axis
+                svg
+                  .append("g")
+                  .attr("transform", `translate(0,${height})`)
+                  .call(d3.axisBottom(xScale).ticks(10))
+                  .style('font-size', '20');
+
+                svg
+                    .selectAll("rect")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .style("fill", "lavender")
+
+                    .attr("x", function(d) {
+                      return xScale(d.answer);
+                    })
+                    .attr("height", height)
+                    .transition()
+                    .duration(1000)
+                    .delay(100)
+                    .attr("y", function(d) {
+                      return yScale(d.votes);
+                    })
+                  
+                 
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", function(d) {
+                      return height - yScale(d.votes);
+                    })
+              
+                    
+             }
+    
+              });
+         
+
+
+            function responsivefy(svg) {
+              // get container + svg aspect ratio
+              var container = d3.select(svg.node().parentNode),
+                width = parseInt(svg.style("width")),
+                height = parseInt(svg.style("height")),
+                aspect = width / height;
+
+              svg
+                .attr("viewBox", "0 0 " + width + " " + height)
+                .attr("preserveAspectRatio", "xMinYMid")
+                .call(resize);
+              d3.select(window).on("resize." + container.attr("id"), resize);
+
+              function resize() {
+                var targetWidth = parseInt(container.style("width"));
+                svg.attr("width", targetWidth);
+                svg.attr("height", Math.round(targetWidth / aspect));
+              }
+            }
+
+      });
+   </script>
+
+</html>

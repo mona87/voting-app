@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+  <title>Voting App</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="background: #e0f2f1;">
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1696295657331930',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();   
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+   <%- include('./partials/nav.ejs', {user: user}); %>
+  <main style="margin-top: 15%;">
+    <div class="container ">
+    
+        <div class="row ">
+         
+            <div style="text-align: center; " class="col s12 ">
+ <div class="card-panel cyan darken-4  white-text ">
+            <h5>Please Login or Register</h5>
+         
+          <div style="margin-top: 5%;">
+            <a style="margin-bottom: 5%;"  href="/login" class="waves-effect waves-light btn">Login</a>
+            <a style="margin-bottom: 5%;"  href="/signup" class="waves-effect waves-light btn">Sign Up</a>
+           
+          <a style="margin-bottom: 5%;"  href="/auth/facebook" class="waves-effect waves-light btn blue""> Facebook</a>
+        </div>
+         </div>
+        </div>
+        </div>
+    </div>
+    </main>
+</body>
+   <%- include('./partials/script.ejs') %>
+
+</html>

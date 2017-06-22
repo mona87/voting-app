@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Profile</title>
+	      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+	   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body >
+   <%- include('./partials/nav.ejs', {user: user}); %>
+  <main >
+
+ <% if(user) { %>
+     <%- include('./partials/dashboard.ejs', {user: user}); %>
+  <%} %>
+      <div style="margin-top: 10%;" class="container">
+
+
+      <div class="row">
+      <h3 >Login</h3>
+          <% if (message.length > 0) { %>
+        <div style="color: red;" class="alert alert-danger"><%= message %></div>
+    <% } %>
+      <form id="form" class="col s12" method="post" action="login" >
+        <div class="error" style="display: none; color: red;">Please fill in all fields.</div>
+          <div class="input-field  ">
+          <label for="email">email</label>
+          <input id="email" type="email" name="email">
+               </div>
+                     <div class="input-field  ">
+               <label for="password">password</label>
+           <input id="password" type="text" name="password">
+           <button id="sub" class="waves-effect waves-light btn">Login</button>
+          <a href="/signup" class="waves-effect waves-light btn">Sign Up</a>
+  
+          <a href="/auth/facebook" class="waves-effect waves-light btn blue""> Facebook</a>
+      </div>
+           </form>
+        </div>
+      </div>
+</div>
+</main>
+</body>
+   <%- include('./partials/script.ejs') %>
+<script>
+$(function(){
+  $('#sub').click((e) => {
+ console.log('email',$('#email').val());
+  console.log('email',$('#password').val());
+    e.preventDefault();
+    if(!$('#email').val() || !$('#password').val()){
+      $('.error').show();
+
+    } else{
+      $('#form').submit();
+    }
+  })
+})
+</script> 
+
+</html>
